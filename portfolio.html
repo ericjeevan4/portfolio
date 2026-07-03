@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ericjeevan4@portfolio: ~/ml-engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Bebas+Neue&family=Oxanium:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#050807;
+    --bg-panel:#0a100d;
+    --bg-panel-2:#0d1512;
+    --green:#39ff88;
+    --green-dim:#1b7d47;
+    --cyan:#4deaff;
+    --cyan-dim:#166877;
+    --amber:#ffb020;
+    --amber-dim:#7a5410;
+    --text:#c8f5da;
+    --text-dim:#5f8c72;
+    --border:#153824;
+    --danger:#ff4d4d;
+    --mono:'JetBrains Mono', monospace;
+    --display:'Bebas Neue', sans-serif;
+    --tech:'Oxanium', sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  ::selection{background:var(--green);color:#000;}
+  ::-webkit-scrollbar{width:10px;}
+  ::-webkit-scrollbar-track{background:var(--bg);}
+  ::-webkit-scrollbar-thumb{background:var(--green-dim);border:1px solid var(--border);}
+
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--mono);
+    line-height:1.6;
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  body::before{
+    content:'';
+    position:fixed;
+    inset:0;
+    background:
+      repeating-linear-gradient(0deg, rgba(57,255,136,0.025) 0px, rgba(57,255,136,0.025) 1px, transparent 1px, transparent 3px);
+    pointer-events:none;
+    z-index:9999;
+    mix-blend-mode:overlay;
+  }
+
+  body::after{
+    content:'';
+    position:fixed;
+    inset:0;
+    background:radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.55) 100%);
+    pointer-events:none;
+    z-index:9998;
+  }
+
+  a{color:inherit;text-decoration:none;}
+
+  /* ===================== BIOS BOOT SCREEN ===================== */
+  #boot-screen{
+    position:fixed;
+    inset:0;
+    background:#000;
+    color:#39ff88;
+    font-family:var(--mono);
+    font-size:13px;
+    z-index:100000;
+    padding:30px 40px;
+    white-space:pre-wrap;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+  #boot-lines{flex:1;overflow:hidden;}
+  #boot-screen .line{opacity:0;animation:appear 0.05s forwards;}
+  @keyframes appear{to{opacity:1;}}
+  #boot-cursor{display:inline-block;width:8px;height:14px;background:#39ff88;animation:blink 1s step-end infinite;vertical-align:middle;}
+  @keyframes blink{50%{opacity:0;}}
+  #boot-progress-wrap{margin-top:10px;font-size:12px;color:#2a8a55;}
+  #boot-bar-track{width:100%;max-width:500px;height:10px;border:1px solid #1b7d47;margin-top:6px;}
+  #boot-bar-fill{height:100%;width:0%;background:repeating-linear-gradient(45deg,#39ff88,#39ff88 4px,#0f4d2a 4px,#0f4d2a 8px);transition:width 0.15s linear;}
+  #boot-screen.hide{animation:bootOut 0.5s forwards;}
+  @keyframes bootOut{
+    0%{opacity:1;filter:brightness(1);}
+    60%{opacity:1;filter:brightness(3);}
+    100%{opacity:0;filter:brightness(3);display:none;}
+  }
+
+  /* ===================== SITE (hidden until boot done) ===================== */
+  #site{
+    opacity:0;
+    transition:opacity 0.6s ease;
+  }
+  #site.visible{opacity:1;}
+
+  .scanlines-fixed{
+    position:fixed;inset:0;pointer-events:none;z-index:40;
+  }
+
+  section{
+    position:relative;
+    padding:90px 6vw;
+    max-width:1300px;
+    margin:0 auto;
+  }
+
+  .eyebrow{
+    font-family:var(--tech);
+    letter-spacing:0.35em;
+    text-transform:uppercase;
+    font-size:12px;
+    color:var(--cyan);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:18px;
+  }
+  .eyebrow::before{
+    content:'';
+    width:22px;height:1px;background:var(--cyan);
+  }
+
+  .section-title{
+    font-family:var(--display);
+    font-size:clamp(32px,5vw,54px);
+    letter-spacing:0.03em;
+    color:var(--green);
+    text-shadow:0 0 18px rgba(57,255,136,0.35);
+    margin-bottom:10px;
+  }
+
+  /* ===================== NAVBAR ===================== */
+  #navbar{
+    position:fixed;
+    top:0;left:0;right:0;
+    z-index:500;
+    background:rgba(5,8,7,0.85);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 22px;
+    height:52px;
+    font-family:var(--tech);
+  }
+  .nav-left{display:flex;align-items:center;gap:10px;}
+  .nav-dots{display:flex;gap:6px;}
+  .nav-dots span{width:10px;height:10px;border-radius:50%;display:inline-block;}
+  .nav-dots span:nth-child(1){background:#ff5f56;}
+  .nav-dots span:nth-child(2){background:#ffbd2e;}
+  .nav-dots span:nth-child(3){background:#27c93f;}
+  .nav-path{font-size:12px;color:var(--text-dim);letter-spacing:0.05em;}
+  .nav-path b{color:var(--green);font-weight:600;}
+
+  .nav-links{display:flex;gap:26px;font-size:12px;letter-spacing:0.12em;text-transform:uppercase;}
+  .nav-links a{color:var(--text-dim);position:relative;padding:4px 0;transition:color .2s;}
+  .nav-links a:hover{color:var(--green);}
+  .nav-links a::after{
+    content:'';position:absolute;bottom:0;left:0;width:0;height:1px;background:var(--green);
+    transition:width .2s;
+  }
+  .nav-links a:hover::after{width:100%;}
+
+  #nav-clock{
+    font-size:12px;color:var(--amber);
+    border:1px solid var(--amber-dim);
+    padding:4px 10px;
+    display:flex;align-items:center;gap:8px;
+    background:rgba(255,176,32,0.05);
+  }
+  #nav-clock::before{
+    content:'';width:6px;height:6px;border-radius:50%;background:var(--amber);
+    box-shadow:0 0 8px var(--amber);
+    animation:pulse 1.4s infinite;
+  }
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+
+  .burger{display:none;color:var(--green);font-size:20px;background:none;border:none;cursor:pointer;}
+
+  /* ===================== HERO ===================== */
+  #hero{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-start;
+    padding-top:130px;
+    padding-bottom:60px;
+    position:relative;
+  }
+  @media (min-height:820px){
+    #hero{justify-content:center;padding-top:100px;}
+  }
+  .hero-grid-bg{
+    position:absolute;inset:0;
+    background-image:
+      linear-gradient(rgba(57,255,136,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(57,255,136,0.06) 1px, transparent 1px);
+    background-size:42px 42px;
+    -webkit-mask-image:radial-gradient(ellipse 70% 60% at 50% 30%, black 20%, transparent 80%);
+    mask-image:radial-gradient(ellipse 70% 60% at 50% 30%, black 20%, transparent 80%);
+    z-index:0;
+  }
+  .hero-inner{position:relative;z-index:2;}
+
+  .hero-tag{
+    font-family:var(--mono);
+    color:var(--cyan);
+    font-size:13px;
+    margin-bottom:22px;
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    border:1px solid var(--cyan-dim);
+    padding:6px 14px;
+    background:rgba(77,234,255,0.04);
+  }
+  .hero-tag .dot{width:7px;height:7px;background:var(--green);border-radius:50%;box-shadow:0 0 8px var(--green);animation:pulse 1.6s infinite;}
+
+  .glitch-title{
+    font-family:var(--display);
+    font-size:clamp(46px,9vw,110px);
+    line-height:0.95;
+    color:var(--text);
+    letter-spacing:0.01em;
+    position:relative;
+    display:inline-block;
+    text-transform:uppercase;
+  }
+  .glitch-title span{
+    background:linear-gradient(180deg, var(--green), var(--cyan) 90%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  .glitch-title{
+    animation:glitch-shift 6s infinite;
+  }
+  .glitch-title::before,
+  .glitch-title::after{
+    content:attr(data-text);
+    position:absolute;top:0;left:0;
+    width:100%;
+    overflow:hidden;
+    background:linear-gradient(180deg, var(--green), var(--cyan) 90%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+  }
+  .glitch-title::before{
+    color:var(--cyan);
+    clip-path:inset(0 0 60% 0);
+    transform:translate(-2px,-2px);
+    animation:glitch-1 3.5s infinite linear alternate-reverse;
+    opacity:0.7;
+  }
+  .glitch-title::after{
+    color:var(--amber);
+    clip-path:inset(60% 0 0 0);
+    transform:translate(2px,2px);
+    animation:glitch-2 4.5s infinite linear alternate-reverse;
+    opacity:0.6;
+  }
+  @keyframes glitch-1{
+    0%,90%,100%{transform:translate(-2px,-2px);}
+    92%{transform:translate(3px,-1px);}
+    94%{transform:translate(-3px,1px);}
+    96%{transform:translate(2px,2px);}
+  }
+  @keyframes glitch-2{
+    0%,90%,100%{transform:translate(2px,2px);}
+    91%{transform:translate(-2px,0px);}
+    95%{transform:translate(3px,-2px);}
+    97%{transform:translate(-1px,2px);}
+  }
+  @keyframes glitch-shift{
+    0%,96%,100%{filter:none;}
+    97%{filter:hue-rotate(20deg);}
+    98%{filter:hue-rotate(-15deg);}
+  }
+
+  .hero-sub{
+    font-family:var(--tech);
+    font-size:clamp(16px,2vw,22px);
+    color:var(--text-dim);
+    margin-top:18px;
+    max-width:640px;
+    font-weight:500;
+  }
+  .hero-sub b{color:var(--amber);font-weight:700;}
+
+  .hero-name{
+    font-family:var(--tech);
+    font-size:13px;
+    letter-spacing:0.15em;
+    color:var(--text-dim);
+    margin-top:14px;
+    text-transform:uppercase;
+  }
+  .hero-name b{color:var(--green);}
+
+  .hero-socials{
+    margin-top:18px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+  .hero-socials a{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--cyan);
+    border:1px solid var(--cyan-dim);
+    padding:6px 12px;
+    background:rgba(77,234,255,0.04);
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    transition:all .2s;
+  }
+  .hero-socials a:hover{
+    background:var(--cyan);
+    color:#031318;
+    box-shadow:0 0 16px rgba(77,234,255,0.45);
+  }
+  .hero-socials a .ico{color:var(--amber);}
+  .hero-socials a:hover .ico{color:#031318;}
+
+  .card-link{
+    color:var(--text-dim);
+    font-size:14px;
+    border:1px solid var(--border);
+    padding:2px 8px;
+    transition:all .2s;
+    display:inline-flex;
+    align-items:center;
+  }
+  .card-link:hover{color:var(--green);border-color:var(--green);}
+
+  .hero-terminal{
+    margin-top:42px;
+    max-width:680px;
+    border:1px solid var(--border);
+    background:linear-gradient(180deg, var(--bg-panel), var(--bg-panel-2));
+    box-shadow:0 0 40px rgba(57,255,136,0.06), inset 0 0 60px rgba(0,0,0,0.4);
+  }
+  .term-titlebar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:8px 12px;
+    border-bottom:1px solid var(--border);
+    background:rgba(57,255,136,0.03);
+  }
+  .term-titlebar .nav-dots span{width:8px;height:8px;}
+  .term-title-text{font-family:var(--tech);font-size:11px;color:var(--text-dim);letter-spacing:0.1em;}
+  .term-body{padding:16px 18px;font-size:13.5px;min-height:150px;}
+  .term-body .prompt-line{margin-bottom:6px;color:var(--text-dim);}
+  .term-body .prompt-line b{color:var(--green);}
+  #typed-output{color:var(--cyan);white-space:pre-wrap;}
+  #typed-cursor{display:inline-block;width:7px;height:15px;background:var(--green);vertical-align:middle;animation:blink 0.9s step-end infinite;}
+
+  .hero-ctas{margin-top:34px;display:flex;gap:16px;flex-wrap:wrap;}
+  .btn{
+    font-family:var(--tech);
+    font-size:13px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    padding:12px 24px;
+    border:1px solid var(--green);
+    color:var(--green);
+    cursor:pointer;
+    background:transparent;
+    position:relative;
+    transition:all .2s;
+  }
+  .btn:hover{background:var(--green);color:#031007;box-shadow:0 0 24px rgba(57,255,136,0.5);}
+  .btn.alt{border-color:var(--cyan);color:var(--cyan);}
+  .btn.alt:hover{background:var(--cyan);color:#031318;box-shadow:0 0 24px rgba(77,234,255,0.5);}
+
+  .scroll-hint{
+    position:absolute;bottom:24px;left:6vw;
+    font-family:var(--tech);font-size:11px;letter-spacing:0.2em;color:var(--text-dim);
+    display:flex;align-items:center;gap:10px;
+  }
+  .scroll-hint::after{
+    content:'';width:1px;height:34px;background:linear-gradient(var(--green),transparent);
+    animation:scrolldown 1.6s infinite;
+  }
+  @keyframes scrolldown{0%{opacity:0;transform:translateY(-6px);}50%{opacity:1;}100%{opacity:0;transform:translateY(10px);}}
+
+  /* ===================== SKILLS ===================== */
+  #skills{border-top:1px solid var(--border);}
+  .skills-grid{
+    margin-top:36px;
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(180px,1fr));
+    gap:14px;
+  }
+  .skill-chip{
+    border:1px solid var(--border);
+    background:var(--bg-panel);
+    padding:16px 16px;
+    font-family:var(--tech);
+    font-size:14px;
+    font-weight:600;
+    color:var(--text);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    position:relative;
+    overflow:hidden;
+    transition:border-color .25s, transform .25s;
+  }
+  .skill-chip .idx{font-family:var(--mono);font-size:10px;color:var(--text-dim);}
+  .skill-chip:hover{border-color:var(--green);transform:translateY(-3px);}
+  .skill-chip::before{
+    content:'';position:absolute;top:0;left:0;width:3px;height:100%;
+    background:var(--green-dim);
+    transition:background .25s;
+  }
+  .skill-chip:hover::before{background:var(--green);box-shadow:0 0 10px var(--green);}
+  .skill-chip:nth-child(3n+2)::before{background:var(--cyan-dim);}
+  .skill-chip:nth-child(3n+2):hover::before{background:var(--cyan);box-shadow:0 0 10px var(--cyan);}
+  .skill-chip:nth-child(3n)::before{background:var(--amber-dim);}
+  .skill-chip:nth-child(3n):hover::before{background:var(--amber);box-shadow:0 0 10px var(--amber);}
+
+  /* ===================== EXPERIENCE TIMELINE ===================== */
+  #experience{border-top:1px solid var(--border);}
+  .timeline{
+    margin-top:40px;
+    position:relative;
+    padding-left:32px;
+    border-left:1px dashed var(--border);
+  }
+  .tl-item{
+    position:relative;
+    margin-bottom:44px;
+    padding-left:26px;
+  }
+  .tl-item:last-child{margin-bottom:0;}
+  .tl-item::before{
+    content:'';
+    position:absolute;
+    left:-42px;
+    top:4px;
+    width:12px;height:12px;
+    background:var(--bg);
+    border:2px solid var(--green);
+    border-radius:2px;
+    box-shadow:0 0 10px rgba(57,255,136,0.5);
+  }
+  .tl-meta{
+    font-family:var(--tech);
+    font-size:11px;
+    letter-spacing:0.12em;
+    color:var(--amber);
+    text-transform:uppercase;
+    margin-bottom:6px;
+  }
+  .tl-role{
+    font-family:var(--tech);
+    font-size:20px;
+    font-weight:700;
+    color:var(--text);
+    margin-bottom:4px;
+  }
+  .tl-org{color:var(--cyan);font-size:13px;margin-bottom:14px;}
+  .tl-tasks{list-style:none;}
+  .tl-tasks li{
+    position:relative;
+    padding-left:20px;
+    margin-bottom:10px;
+    font-size:13.5px;
+    color:var(--text-dim);
+  }
+  .tl-tasks li::before{
+    content:'>';
+    position:absolute;left:0;top:0;
+    color:var(--green);
+    font-weight:700;
+  }
+  .tl-tasks li b{color:var(--text);font-weight:500;}
+
+  .sub-block{margin-top:56px;}
+  .sub-block-title{
+    font-family:var(--tech);
+    font-size:13px;
+    letter-spacing:0.15em;
+    text-transform:uppercase;
+    color:var(--cyan);
+    margin-bottom:18px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .sub-block-title::before{content:'#';color:var(--amber);}
+
+  .cred-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;}
+  .cred-card{
+    border:1px solid var(--border);
+    background:var(--bg-panel);
+    padding:16px 18px;
+    font-size:13px;
+  }
+  .cred-card .cred-title{color:var(--text);font-weight:600;font-family:var(--tech);font-size:14px;margin-bottom:4px;}
+  .cred-card .cred-org{color:var(--green);font-size:12px;margin-bottom:8px;}
+  .cred-card .cred-desc{color:var(--text-dim);font-size:12.5px;}
+
+  /* ===================== PROJECTS ===================== */
+  #projects{border-top:1px solid var(--border);}
+  .projects-grid{
+    margin-top:40px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(320px,1fr));
+    gap:22px;
+  }
+  .project-card{
+    border:1px solid var(--border);
+    background:linear-gradient(160deg, var(--bg-panel), var(--bg));
+    padding:26px 24px;
+    position:relative;
+    transition:border-color .25s, transform .25s;
+    cursor:default;
+  }
+  .project-card:hover{border-color:var(--green);transform:translateY(-4px);}
+  .project-card .p-index{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--text-dim);
+    margin-bottom:14px;
+    display:flex;justify-content:space-between;
+  }
+  .project-card .p-index .status{color:var(--green);}
+  .project-card h3{
+    font-family:var(--tech);
+    font-size:19px;
+    color:var(--text);
+    margin-bottom:12px;
+    line-height:1.3;
+  }
+  .project-card ul{list-style:none;margin-bottom:16px;}
+  .project-card ul li{
+    font-size:13px;
+    color:var(--text-dim);
+    padding-left:18px;
+    position:relative;
+    margin-bottom:8px;
+  }
+  .project-card ul li::before{
+    content:'$';
+    position:absolute;left:0;color:var(--cyan);
+  }
+  .p-tags{display:flex;flex-wrap:wrap;gap:8px;}
+  .p-tags span{
+    font-family:var(--mono);
+    font-size:10.5px;
+    color:var(--amber);
+    border:1px solid var(--amber-dim);
+    padding:3px 8px;
+    background:rgba(255,176,32,0.05);
+  }
+
+  /* ===================== ACHIEVEMENTS STRIP ===================== */
+  #achievements{border-top:1px solid var(--border);}
+  .ach-grid{margin-top:36px;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;}
+  .ach-card{
+    border:1px solid var(--green-dim);
+    padding:20px;
+    background:rgba(57,255,136,0.03);
+  }
+  .ach-card .ach-label{font-family:var(--tech);color:var(--green);font-size:13px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;}
+  .ach-card p{font-size:12.5px;color:var(--text-dim);}
+
+  /* ===================== CONTACT / TERMINAL ===================== */
+  #contact{border-top:1px solid var(--border);padding-bottom:60px;}
+  .contact-terminal{
+    margin-top:36px;
+    border:1px solid var(--border);
+    background:linear-gradient(180deg, var(--bg-panel), #030503);
+    box-shadow:0 0 50px rgba(57,255,136,0.08);
+    max-width:800px;
+  }
+  #term-log{
+    padding:18px 20px;
+    height:280px;
+    overflow-y:auto;
+    font-size:13px;
+  }
+  #term-log .log-line{margin-bottom:8px;white-space:pre-wrap;}
+  #term-log .log-cmd{color:var(--cyan);}
+  #term-log .log-cmd::before{content:'guest@portfolio:~$ ';color:var(--green);}
+  #term-log .log-resp{color:var(--text-dim);}
+  #term-log .log-resp b{color:var(--amber);}
+  .term-input-row{
+    display:flex;align-items:center;gap:8px;
+    border-top:1px solid var(--border);
+    padding:12px 20px;
+  }
+  .term-input-row .prefix{color:var(--green);font-size:13px;white-space:nowrap;}
+  #term-input{
+    flex:1;
+    background:transparent;
+    border:none;
+    outline:none;
+    color:var(--text);
+    font-family:var(--mono);
+    font-size:13px;
+  }
+  .contact-hint{margin-top:16px;font-size:12px;color:var(--text-dim);}
+  .contact-hint b{color:var(--cyan);}
+
+  footer{
+    text-align:center;
+    padding:28px;
+    font-size:11px;
+    color:var(--text-dim);
+    border-top:1px solid var(--border);
+    font-family:var(--tech);
+    letter-spacing:0.1em;
+  }
+
+  @media (max-width:820px){
+    .nav-links{display:none;}
+    .burger{display:block;}
+    section{padding:70px 5vw;}
+    .timeline{padding-left:20px;}
+    .tl-item::before{left:-30px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===================== BIOS BOOT SCREEN ===================== -->
+<div id="boot-screen">
+  <div id="boot-lines"></div>
+  <div id="boot-progress-wrap">
+    <div id="boot-progress-text">LOADING KERNEL MODULES...</div>
+    <div id="boot-bar-track"><div id="boot-bar-fill"></div></div>
+  </div>
+</div>
+
+<!-- ===================== SITE ===================== -->
+<div id="site">
+
+  <nav id="navbar">
+    <div class="nav-left">
+      <div class="nav-dots"><span></span><span></span><span></span></div>
+      <div class="nav-path"><b>ericjeevan4</b>@portfolio:~/ml-engineer$</div>
+    </div>
+    <div class="nav-links">
+      <a href="#hero">home</a>
+      <a href="#skills">skills</a>
+      <a href="#experience">experience</a>
+      <a href="#projects">projects</a>
+      <a href="#contact">contact</a>
+    </div>
+    <div style="display:flex;align-items:center;gap:14px;">
+      <div id="nav-clock">--:--:--</div>
+      <button class="burger" id="burgerBtn">☰</button>
+    </div>
+  </nav>
+
+  <!-- ===================== HERO ===================== -->
+  <section id="hero">
+    <div class="hero-grid-bg"></div>
+    <div class="hero-inner">
+      <div class="hero-tag"><span class="dot"></span> SYSTEM STATUS: ONLINE // OPEN TO OPPORTUNITIES</div>
+      <h1 class="glitch-title" data-text="MACHINE LEARNING&#10;ENGINEER">MACHINE LEARNING<br><span>ENGINEER</span></h1>
+      <p class="hero-sub">Building <b>AI-driven, multimodal systems</b> across vision, language and audio — from LLM/VLM pipelines to production-ready, cloud-integrated applications.</p>
+      <p class="hero-name">// <b>Eric Jeevan A</b> — Chennai, India</p>
+
+      <div class="hero-socials">
+        <a href="https://github.com/ericjeevan4" target="_blank" rel="noopener"><span class="ico">&gt;</span>github/ericjeevan4</a>
+        <a href="https://linkedin.com/in/ericjeevan" target="_blank" rel="noopener"><span class="ico">&gt;</span>linkedin/ericjeevan4</a>
+        <a href="mailto:ericjeevan4@gmail.com"><span class="ico">&gt;</span>ericjeevan4@gmail.com</a>
+        <a href="tel:+918667250681"><span class="ico">&gt;</span>+91 86672 50681</a>
+      </div>
+
+      <div class="hero-terminal">
+        <div class="term-titlebar">
+          <div class="nav-dots"><span></span><span></span><span></span></div>
+          <div class="term-title-text">whoami.sh</div>
+          <div style="width:40px;"></div>
+        </div>
+        <div class="term-body">
+          <div class="prompt-line"><b>guest@portfolio</b>:~$ ./whoami.sh</div>
+          <div id="typed-output"></div><span id="typed-cursor"></span>
+        </div>
+      </div>
+
+      <div class="hero-ctas">
+        <button class="btn" onclick="document.getElementById('projects').scrollIntoView()">./view_projects</button>
+        <button class="btn alt" onclick="document.getElementById('contact').scrollIntoView()">./contact_me</button>
+      </div>
+    </div>
+    <div class="scroll-hint">SCROLL</div>
+  </section>
+
+  <!-- ===================== SKILLS ===================== -->
+  <section id="skills">
+    <div class="eyebrow">02 // TECH_STACK</div>
+    <h2 class="section-title">SKILLS.CONFIG</h2>
+    <p style="color:var(--text-dim);max-width:600px;">Core languages, frameworks and techniques loaded into memory.</p>
+    <div class="skills-grid" id="skillsGrid"></div>
+  </section>
+
+  <!-- ===================== EXPERIENCE ===================== -->
+  <section id="experience">
+    <div class="eyebrow">03 // RUNTIME_LOG</div>
+    <h2 class="section-title">EXPERIENCE.LOG</h2>
+
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-meta">26 DEC 2025 — 31 MAR 2026</div>
+        <div class="tl-role">AI Research Engineer — Intern</div>
+        <div class="tl-org">Energy ETA Solutions (P) Ltd.</div>
+        <ul class="tl-tasks">
+          <li><b>Multimodal AI Chatbot</b> — built a Qwen2.5-VL based chatbot for intelligent Q&A across PDFs, images, PPT and Word files, with multilingual response support and VLM-driven contextual generation. <a class="card-link" href="https://github.com/ericjeevan4/hvacbot" target="_blank" rel="noopener" title="View on GitHub">&gt;_</a></li>
+          <li><b>IEC Symbol Detection</b> — developed a SAM-CLIP based segmentation and classification system for automated industrial symbol detection with accurate bounding-box generation. <a class="card-link" href="https://github.com/ericjeevan4/IEC-Symbol-Detection" target="_blank" rel="noopener" title="View on GitHub">&gt;_</a></li>
+          <li><b>AI-Based Energy Meter Reading</b> — built a Qwen2-VL image-parsing pipeline to extract kWh readings from real-world meter images into structured Excel/JSON outputs. <a class="card-link" href="https://github.com/ericjeevan4/AI-Based-Energy-Meter-Reading" target="_blank" rel="noopener" title="View on GitHub">&gt;_</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sub-block">
+      <div class="sub-block-title">education</div>
+      <div class="cred-grid">
+        <div class="cred-card">
+          <div class="cred-title">B.Tech — Artificial Intelligence &amp; Data Science</div>
+          <div class="cred-org">St. Joseph's College of Engineering · 2025 – Present</div>
+          <div class="cred-desc">GPA: 8.50 / 10</div>
+        </div>
+        <div class="cred-card">
+          <div class="cred-title">Class 12 — State Board</div>
+          <div class="cred-org">St. Mary's Higher Secondary School · 2022</div>
+          <div class="cred-desc">87.17%</div>
+        </div>
+        <div class="cred-card">
+          <div class="cred-title">Class 10 — State Board</div>
+          <div class="cred-org">St. Mary's Higher Secondary School · 2020</div>
+          <div class="cred-desc">93.60%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sub-block">
+      <div class="sub-block-title">certifications</div>
+      <div class="cred-grid">
+        <div class="cred-card">
+          <div class="cred-title">AWS Certified AI Practitioner <a class="card-link" href="https://www.linkedin.com/posts/ericjeevan_ai-practioner-activity-7324298715886714880-utB4" target="_blank" rel="noopener" title="View on LinkedIn">&gt;_</a></div>
+          <div class="cred-org">Amazon Web Services</div>
+        </div>
+        <div class="cred-card">
+          <div class="cred-title">Design and Engineering of Computer Systems — Elite <a class="card-link" href="https://www.linkedin.com/posts/ericjeevan_nptel-activity-7324299820813221888-xsdp" target="_blank" rel="noopener" title="View on LinkedIn">&gt;_</a></div>
+          <div class="cred-org">NPTEL · IIT Bombay</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sub-block" id="achievements">
+      <div class="sub-block-title">achievements &amp; publication</div>
+      <div class="ach-grid">
+        <div class="ach-card">
+          <div class="ach-label">🏆 Winner — Smart India Hackathon 2025 <a class="card-link" href="https://www.linkedin.com/posts/ericjeevan_sih2025-smartindiahackathon-jalnetra-activity-7404434115221184512-06nD" target="_blank" rel="noopener" title="View on LinkedIn">&gt;_</a></div>
+          <p>Shortlisted in the Top 5 of 500 teams nationwide; won the final round working under the Ministry of Jal Shakti.</p>
+        </div>
+        <div class="ach-card">
+          <div class="ach-label">🏆 Winner — Make-a-thon 2.0 <a class="card-link" href="https://www.linkedin.com/posts/ericjeevan_makeathon-sih2025-hackathon-activity-7374411920868696064-4yfg" target="_blank" rel="noopener" title="View on LinkedIn">&gt;_</a></div>
+          <p>Selected among the Top 100 of 350+ participants; secured 1st place in the finals at St. Joseph's College of Engineering, Chennai.</p>
+        </div>
+        <div class="ach-card">
+          <div class="ach-label">📄 Research Publication — TechRxiv <a class="card-link" href="https://www.techrxiv.org/users/940348/articles/1386421-ai-powered-career-guidance-aligned-with-nep-2020-a-personalized-and-scalable-platform-for-student-empowerment" target="_blank" rel="noopener" title="View publication">&gt;_</a></div>
+          <p>"AI-Powered Career Guidance Aligned with NEP 2020: A Personalized and Scalable Platform for Student Empowerment" — AI-based career prediction and personalized learning recommendations.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PROJECTS ===================== -->
+  <section id="projects">
+    <div class="eyebrow">04 // BUILD_ARTIFACTS</div>
+    <h2 class="section-title">PROJECTS.DIR</h2>
+    <p style="color:var(--text-dim);max-width:600px;">Selected systems shipped end-to-end — from model to mobile app.</p>
+
+    <div class="projects-grid">
+      <div class="project-card">
+        <div class="p-index"><span>proj_01.exe</span><span class="status">● deployed</span></div>
+        <h3>AI-Based Water Level Monitoring <a class="card-link" href="https://github.com/ericjeevan4/waterline-detection" target="_blank" rel="noopener" title="View on GitHub">&gt;_</a></h3>
+        <ul>
+          <li>Automated river water-level monitoring via real-time image capture, geofencing alerts and offline sync.</li>
+          <li>AI-powered mobile app with metadata tagging and Canny Edge Detection for image processing.</li>
+          <li>Steganography integration to detect false or tampered images.</li>
+        </ul>
+        <div class="p-tags"><span>Computer Vision</span><span>Canny Edge Detection</span><span>Mobile</span></div>
+      </div>
+
+      <div class="project-card">
+        <div class="p-index"><span>proj_02.exe</span><span class="status">● deployed</span></div>
+        <h3>AI-Enabled Digital Rescue Platform <a class="card-link" href="https://github.com/ericjeevan4/face_rec_api" target="_blank" rel="noopener" title="View on GitHub">&gt;_</a></h3>
+        <ul>
+          <li>Unified emergency rescue coordination with real-time case tracking, verified uploads and face-based identity validation.</li>
+          <li>Flutter-Firebase mobile platform for emergency rescue management.</li>
+          <li>CNN-based face recognition with Mapbox API for live location tracking.</li>
+        </ul>
+        <div class="p-tags"><span>CNN</span><span>Flutter</span><span>Firebase</span><span>Mapbox</span></div>
+      </div>
+
+      <div class="project-card">
+        <div class="p-index"><span>proj_03.exe</span><span class="status">● deployed</span></div>
+        <h3>AI-Powered Career Guidance Platform <a class="card-link" href="https://github.com/ericjeevan4/CAREER" target="_blank" rel="noopener" title="View on GitHub">&gt;_</a></h3>
+        <ul>
+          <li>Personalized career recommendations from accurate ML predictions and automated user profiling.</li>
+          <li>Random Forest model integrated with Flutter, Flask and Firebase for career prediction.</li>
+          <li>Curated course recommendations aligned with predicted career paths.</li>
+        </ul>
+        <div class="p-tags"><span>Random Forest</span><span>Flask</span><span>Firebase</span></div>
+      </div>
+
+      <div class="project-card">
+        <div class="p-index"><span>proj_04.exe</span><span class="status">● deployed</span></div>
+        <h3>Deep Learning-Based Audio Language Model <a class="card-link" href="https://github.com/ericjeevan4/ALM-miniproject" target="_blank" rel="noopener" title="View on GitHub">&gt;_</a></h3>
+        <ul>
+          <li>Real-world audio intelligence: speech recognition, emotion detection and audio scene understanding.</li>
+          <li>Built using Whisper, Wav2Vec2, AST and Mistral-3B.</li>
+          <li>Unified platform for speech and non-speech multimodal audio analysis.</li>
+        </ul>
+        <div class="p-tags"><span>Whisper</span><span>Wav2Vec2</span><span>AST</span><span>Mistral-3B</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CONTACT ===================== -->
+  <section id="contact">
+    <div class="eyebrow">05 // OPEN_CHANNEL</div>
+    <h2 class="section-title">CONTACT.SH</h2>
+    <p style="color:var(--text-dim);max-width:600px;">Type <b style="color:var(--amber);">help</b> in the terminal below to see available commands.</p>
+
+    <div class="contact-terminal">
+      <div class="term-titlebar">
+        <div class="nav-dots"><span></span><span></span><span></span></div>
+        <div class="term-title-text">contact.sh — interactive</div>
+        <div style="width:40px;"></div>
+      </div>
+      <div id="term-log"></div>
+      <div class="term-input-row">
+        <span class="prefix">guest@portfolio:~$</span>
+        <input type="text" id="term-input" autocomplete="off" spellcheck="false" placeholder="type 'help' and press enter" />
+      </div>
+    </div>
+    <p class="contact-hint">Or reach out directly — <a href="mailto:ericjeevan4@gmail.com" style="color:var(--amber);">ericjeevan4@gmail.com</a> · <a href="tel:+918667250681" style="color:var(--amber);">+91 86672 50681</a> · <a href="https://github.com/ericjeevan4" target="_blank" rel="noopener" style="color:var(--amber);">GitHub</a> · <a href="https://linkedin.com/in/ericjeevan" target="_blank" rel="noopener" style="color:var(--amber);">LinkedIn</a></p>
+  </section>
+
+  <footer>
+    &copy; <span id="year"></span> BUILT WITH PYTORCH, COFFEE &amp; A TERMINAL // ALL SYSTEMS NOMINAL
+  </footer>
+</div>
+
+<script>
+/* ========================= BIOS BOOT SEQUENCE ========================= */
+(function(){
+  const bootLines = [
+    "PhoenixBIOS 4.0 Release 6.0",
+    "Copyright (C) 1985-2026 Portfolio Systems, Inc.",
+    "",
+    "CPU: Neural-Core i9 Multimodal @ 4.20GHz",
+    "Memory Test: 65536K OK",
+    "",
+    "Detecting Primary Master ... PYTORCH_FRAMEWORK.dll  OK",
+    "Detecting Primary Slave  ... LLM_RAG_ENGINE.sys      OK",
+    "Detecting Secondary Master... VLM_ALM_MODULES.bin    OK",
+    "Detecting Secondary Slave ... CLOUD_COMPUTE.dat       OK",
+    "",
+    "Initializing skills.config .......... [OK]",
+    "Mounting /experience ................ [OK]",
+    "Mounting /projects ................... [OK]",
+    "Loading contact.sh interpreter ....... [OK]",
+    "",
+    "Verifying identity: ML_ENGINEER ..... AUTHENTICATED",
+    "",
+    "Press any key to continue booting into PORTFOLIO_OS..."
+  ];
+
+  const linesEl = document.getElementById('boot-lines');
+  const fill = document.getElementById('boot-bar-fill');
+  const progText = document.getElementById('boot-progress-text');
+  const bootScreen = document.getElementById('boot-screen');
+  const site = document.getElementById('site');
+
+  let i = 0;
+  function typeLine(){
+    if(i < bootLines.length){
+      const div = document.createElement('div');
+      div.className = 'line';
+      div.textContent = bootLines[i];
+      linesEl.appendChild(div);
+      i++;
+      const delay = bootLines[i-1] === "" ? 40 : (30 + Math.random()*40);
+      setTimeout(typeLine, delay);
+    } else {
+      runProgress();
+    }
+  }
+
+  function runProgress(){
+    let pct = 0;
+    const stages = ["LOADING KERNEL MODULES...","MOUNTING FILESYSTEMS...","STARTING PORTFOLIO_OS...","READY."];
+    let stageIdx = 0;
+    const interval = setInterval(()=>{
+      pct += Math.random()*14 + 6;
+      if(pct >= 100){
+        pct = 100;
+        clearInterval(interval);
+        fill.style.width = pct + '%';
+        progText.textContent = "READY.";
+        setTimeout(finishBoot, 400);
+        return;
+      }
+      fill.style.width = pct + '%';
+      const newStage = Math.min(stages.length - 1, Math.floor((pct/100) * stages.length));
+      if(newStage !== stageIdx){
+        stageIdx = newStage;
+        progText.textContent = stages[stageIdx];
+      }
+    }, 160);
+  }
+
+  function finishBoot(){
+    bootScreen.classList.add('hide');
+    site.classList.add('visible');
+    setTimeout(()=>{ bootScreen.style.display='none'; }, 550);
+    startTypingTerminal();
+  }
+
+  setTimeout(typeLine, 250);
+
+  // skip boot on click/keypress
+  function skip(){
+    clearTimeout();
+    i = bootLines.length;
+    linesEl.innerHTML = bootLines.map(l=>`<div class="line" style="opacity:1;">${l}</div>`).join('');
+    runProgress();
+    window.removeEventListener('keydown', skip);
+    window.removeEventListener('click', skip);
+  }
+  window.addEventListener('keydown', skip, {once:true});
+  window.addEventListener('click', skip, {once:true});
+})();
+
+/* ========================= LIVE CLOCK ========================= */
+function updateClock(){
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2,'0');
+  const m = String(now.getMinutes()).padStart(2,'0');
+  const s = String(now.getSeconds()).padStart(2,'0');
+  document.getElementById('nav-clock').textContent = `${h}:${m}:${s}`;
+}
+setInterval(updateClock, 1000);
+updateClock();
+document.getElementById('year').textContent = new Date().getFullYear();
+
+/* ========================= HERO TYPING TERMINAL ========================= */
+function startTypingTerminal(){
+  const text = "NAME: Eric Jeevan A\nROLE: Machine Learning Engineer\n\nSpecializing in AI-driven, multimodal systems — LLMs, VLMs & deep learning across computer vision, NLP and audio intelligence.\n\nStack: PyTorch // Random Forest // XGBoost // RAG // Cloud\n\nStatus: shipping real-world, cloud-integrated AI products.";
+  const el = document.getElementById('typed-output');
+  let idx = 0;
+  function type(){
+    if(idx <= text.length){
+      el.textContent = text.slice(0, idx);
+      idx++;
+      setTimeout(type, 14 + Math.random()*18);
+    }
+  }
+  type();
+}
+
+/* ========================= SKILLS GRID ========================= */
+const skills = [
+  "Java","Python","PyTorch","LLM","RAG","VLM",
+  "ALM","Canny Edge Detection","Random Forest","XGBoost","Cloud Computing","Computer Vision"
+];
+const skillsGrid = document.getElementById('skillsGrid');
+skills.forEach((s, idx)=>{
+  const chip = document.createElement('div');
+  chip.className = 'skill-chip';
+  chip.innerHTML = `<span>${s}</span><span class="idx">0x${(idx+10).toString(16).toUpperCase()}</span>`;
+  skillsGrid.appendChild(chip);
+});
+
+/* ========================= NAV BURGER (mobile) ========================= */
+document.getElementById('burgerBtn').addEventListener('click', ()=>{
+  const links = document.querySelector('.nav-links');
+  const isVisible = links.style.display === 'flex';
+  links.style.display = isVisible ? 'none' : 'flex';
+  links.style.position = 'fixed';
+  links.style.top = '52px';
+  links.style.left = '0';
+  links.style.right = '0';
+  links.style.background = '#050807';
+  links.style.flexDirection = 'column';
+  links.style.padding = '18px 22px';
+  links.style.borderBottom = '1px solid var(--border)';
+  links.style.gap = '18px';
+});
+
+/* ========================= CONTACT TERMINAL ========================= */
+(function(){
+  const log = document.getElementById('term-log');
+  const input = document.getElementById('term-input');
+
+  const commands = {
+    help: `Available commands:
+  <b>whoami</b>      — show summary
+  <b>skills</b>      — list tech stack
+  <b>projects</b>    — jump to projects
+  <b>resume</b>      — resume summary
+  <b>email</b>       — get contact email
+  <b>phone</b>       — get contact number
+  <b>github</b>      — open GitHub
+  <b>linkedin</b>    — open LinkedIn
+  <b>publication</b> — open TechRxiv paper
+  <b>clear</b>       — clear terminal`,
+    whoami: `Eric Jeevan A — Machine Learning Engineer building AI-driven, multimodal systems across vision, NLP and audio. Winner — Smart India Hackathon 2025 & Make-a-thon 2.0.`,
+    skills: `Java · Python · PyTorch · LLM · RAG · VLM · ALM · Canny Edge Detection · Random Forest · XGBoost · Cloud Computing`,
+    projects: `Scrolling to /projects ...`,
+    resume: `Resume summary loaded. Key sections: Skills, Projects, Experience (Energy ETA Solutions), Certifications (AWS AI Practitioner, NPTEL Elite), Publication (TechRxiv).`,
+    email: `ericjeevan4@gmail.com — <a href="mailto:ericjeevan4@gmail.com" style="color:var(--green);">compose email &gt;</a>`,
+    phone: `+91 86672 50681 — <a href="tel:+918667250681" style="color:var(--green);">call &gt;</a>`,
+    github: `Opening <a href="https://github.com/ericjeevan4" target="_blank" rel="noopener" style="color:var(--green);">github.com/ericjeevan4</a> ...`,
+    linkedin: `Opening <a href="https://linkedin.com/in/ericjeevan" target="_blank" rel="noopener" style="color:var(--green);">linkedin.com/in/ericjeevan</a> ...`,
+    publication: `Opening TechRxiv paper — <a href="https://www.techrxiv.org/users/940348/articles/1386421-ai-powered-career-guidance-aligned-with-nep-2020-a-personalized-and-scalable-platform-for-student-empowerment" target="_blank" rel="noopener" style="color:var(--green);">view publication &gt;</a>`,
+  };
+
+  function printLine(text, cls){
+    const div = document.createElement('div');
+    div.className = 'log-line ' + (cls || '');
+    div.innerHTML = text;
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function boot(){
+    printLine('Welcome to contact.sh — type <b style="color:var(--amber)">help</b> to see available commands.', 'log-resp');
+  }
+  boot();
+
+  input.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter'){
+      const raw = input.value.trim();
+      if(raw === ''){ return; }
+      printLine(raw, 'log-cmd');
+      const cmd = raw.toLowerCase();
+
+      if(cmd === 'clear'){
+        log.innerHTML = '';
+        boot();
+      } else if(cmd === 'projects'){
+        printLine(commands.projects, 'log-resp');
+        setTimeout(()=>document.getElementById('projects').scrollIntoView({behavior:'smooth'}), 300);
+      } else if(commands[cmd]){
+        printLine(commands[cmd], 'log-resp');
+      } else {
+        printLine(`command not found: ${raw} — type <b style="color:var(--amber)">help</b> for a list of commands`, 'log-resp');
+      }
+      input.value = '';
+    }
+  });
+})();
+</script>
+
+</body>
+</html>
